@@ -24,7 +24,6 @@ body, textarea, input {
 #header {
   width: 820px;
   height: 100px;
-  background-image: url(../images/header-background.png);
   background-repeat: no-repeat;
 }
 #header h1 {
