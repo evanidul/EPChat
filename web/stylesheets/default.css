@@ -13,11 +13,16 @@ body, textarea, input {
   color: #2d2b3d;
 }
 #container {
+/*  text-align:center;*/
 }
 #container-inner {
+/*  margin-left: auto;
+  margin-right: auto;*/
   text-align: justify;
+/*  width: 820px;*/
 }
 #header {
+/*  width: 820px;*/
   height: 100px;
   background-repeat: no-repeat;
 }
@@ -25,15 +30,17 @@ body, textarea, input {
   display: none;
 }
 #main {
-  height: 610px;
+  height: 460px;
   background-image: url(../images/main-background.png);
   background-repeat: no-repeat;
   text-align: left;
+/*  width: 740px;*/
   padding: 30px 40px 20px 40px;
 }
 #display {
   border: 1px solid #5c8098;
-  height: 400px;
+/*  width: 740px;*/
+  height: 250px;
   margin-bottom: 10px;
   overflow-y: scroll;
 }
@@ -41,5 +48,6 @@ body, textarea, input {
   width: 200px;
 }
 #message {
+/*  width: 740px;*/
   height: 50px;
 }
