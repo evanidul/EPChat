@@ -33,6 +33,7 @@ var app = {
 	 }
       });
    },
+   /** dvu: the method that takes care of sending new chat messages to the AjaxCometServlet **/
    post: function() {
       var message = $F('message');
       if(!message > 0) {
@@ -58,6 +59,7 @@ var app = {
 	 }
       });
    },
+   /** dvu: once the AjaxCometServlet pushes new messages to the clients, this method takes care of updating the dom with the latest chat messages **/
    update: function(data) {
       var p = document.createElement('p');
       p.innerHTML = data.name + ':<br/>' + data.message;
@@ -72,6 +74,8 @@ var rules = {
       Event.observe(elem, 'keydown', function(e) {
 	 if(e.keyCode == 13) {
 	    $('login-button').focus();
+		if ($('post-button') != undefined) {$('post-button').focus()};
+		
 	 }
       });
    },
@@ -80,7 +84,10 @@ var rules = {
    },
    '#message': function(elem) {
       Event.observe(elem, 'keydown', function(e) {
-	 if(e.shiftKey && e.keyCode == 13) {
+	 //dvu: this code makes it so shift+enter will post your mesg
+	 //if(e.shiftKey && e.keyCode == 13) {
+	 //dvu: this code makes it so enter will post your mesg
+	 if(e.keyCode == 13) {
 	    $('post-button').focus();
 	 }
       });
