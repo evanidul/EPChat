@@ -51,6 +51,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import web.servlet.async_request_war.ep.mesg.ParsedMessage;
 
 /**
  * This class illustrates the usage of Servlet 3.0 asynchronization APIs.
@@ -63,7 +64,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AjaxCometServlet extends HttpServlet {
 
     private static final Queue<AsyncContext> queue = new ConcurrentLinkedQueue<AsyncContext>();
-
+	
     private static final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<String>();
 
     private static final String BEGIN_SCRIPT_TAG = "<script type='text/javascript'>\n";
@@ -74,6 +75,11 @@ public class AjaxCometServlet extends HttpServlet {
 
     private Thread notifierThread = null;
 
+	/** dvu: emulate a second channel **/
+	private static final Queue<AsyncContext> queue2 = new ConcurrentLinkedQueue<AsyncContext>();
+    private static final BlockingQueue<String> messageQueue2 = new LinkedBlockingQueue<String>();
+	
+	
     @Override
     public void init(ServletConfig config) throws ServletException {
         Runnable notifierRunnable = new Runnable() {
@@ -91,6 +97,18 @@ public class AjaxCometServlet extends HttpServlet {
                             } catch(IOException ex) {
                                 System.out.println(ex);
                                 queue.remove(ac);
+                            }
+                        }
+						/** dvu: emulate the 2nd content */
+                        cMessage = messageQueue2.take();
+                        for (AsyncContext ac : queue2) {
+                            try {
+                                PrintWriter acWriter = ac.getResponse().getWriter();
+                                acWriter.println(cMessage);
+                                acWriter.flush();
+                            } catch(IOException ex) {
+                                System.out.println(ex);
+                                queue2.remove(ac);
                             }
                         }
                     } catch(InterruptedException iex) {
@@ -120,20 +138,24 @@ public class AjaxCometServlet extends HttpServlet {
         ac.addListener(new AsyncListener() {
             public void onComplete(AsyncEvent event) throws IOException {
                 queue.remove(ac);
+                queue2.remove(ac);
             }
 
             public void onTimeout(AsyncEvent event) throws IOException {
                 queue.remove(ac);
+                queue2.remove(ac);
             }
 
             public void onError(AsyncEvent event) throws IOException {
                 queue.remove(ac);
+                queue2.remove(ac);
             }
 
             public void onStartAsync(AsyncEvent event) throws IOException {
             }
         });
         queue.add(ac);
+        queue2.add(ac);
     }
 
     @Override
@@ -149,13 +171,14 @@ public class AjaxCometServlet extends HttpServlet {
 
         if ("login".equals(action)) {
             String cMessage = BEGIN_SCRIPT_TAG + toJsonp("System Message", name + " has joined.") + END_SCRIPT_TAG;
-            notify(cMessage);
+			notify(cMessage , null);
 
             res.getWriter().println("success");
         } else if ("post".equals(action)) {
             String message = req.getParameter("message");
             String cMessage = BEGIN_SCRIPT_TAG + toJsonp(name, message) + END_SCRIPT_TAG;
-            notify(cMessage);
+			ParsedMessage m = new ParsedMessage(message);
+            notify(cMessage, m);
 
             res.getWriter().println("success");
         } else {
@@ -166,12 +189,23 @@ public class AjaxCometServlet extends HttpServlet {
     @Override
     public void destroy() {
         queue.clear();
+        queue2.clear();
         notifierThread.interrupt();
     }
 
-    private void notify(String cMessage) throws IOException {
+    private void notify(String cMessage, ParsedMessage m) throws IOException {
         try {
-            messageQueue.put(cMessage);
+			
+			messageQueue.put(cMessage);
+			
+			if ( m != null){
+			String command = m.getCommand();
+				System.out.println(command);
+				if ( command != null && command.equals("2")){
+					System.out.println("putting message on q");
+					messageQueue2.put(cMessage);
+				}
+			}
         } catch(Exception ex) {
             IOException t = new IOException();
             t.initCause(ex);
