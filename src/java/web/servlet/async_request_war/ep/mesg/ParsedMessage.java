@@ -15,7 +15,11 @@ public class ParsedMessage {
 		this.originalMessage = s;
 		this.parseMessage(s);
 	}
-
+	
+	/** dvu: parses the message and sets all the relevant member variables.
+	 * 
+	 * @param s 
+	 */
 	private void parseMessage(String s){
 		if ( s == null ) return;
 		String[] results = s.split(" ");
@@ -27,6 +31,13 @@ public class ParsedMessage {
 		}
 	}
 	
+	/**
+	 * dvu: returns the command, ie, everything that follows the slash
+	 * 
+	 * ie:  /2 hello!  returns /2.
+	 * @param s
+	 * @return 
+	 */
 	private String findCommand(String s){
 		if ( s == null ) return null;
 		if (s.startsWith("/")){
@@ -39,6 +50,13 @@ public class ParsedMessage {
 		}
 	}
 	
+	/** dvu: returns the message without the command.
+	 * ie:  /2 hi, my name is dan!
+	 * returns hi, my name is dan!
+	 * 
+	 * @param s
+	 * @return 
+	 */
 	private String findMessageWithoutCommand(String s){
 		if ( s == null ) return null;
 		String[] results = s.split(" ");
@@ -49,7 +67,8 @@ public class ParsedMessage {
 				sb.append(results[i]);
 				sb.append(" ");
 			}
-			return sb.toString();
+			String resultString = sb.toString();
+			return resultString.replaceAll("\\s+$", "");  //drops the trailing space
 		} else {
 			return s;
 		}

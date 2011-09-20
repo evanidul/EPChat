@@ -48,6 +48,8 @@ public class ParsedMessageTests {
 		ParsedMessage m = new ParsedMessage(s);
 		Assert.assertEquals(s, m.getOriginalMessage());
 		Assert.assertEquals(command, m.getCommand());
+		System.out.println(messageWithoutCommand);
+		System.out.println(m.getMessageWithoutCommand());
 		Assert.assertEquals(messageWithoutCommand, m.getMessageWithoutCommand());
 	}
 }
