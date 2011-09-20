@@ -171,14 +171,25 @@ public class AjaxCometServlet extends HttpServlet {
 
         if ("login".equals(action)) {
             String cMessage = BEGIN_SCRIPT_TAG + toJsonp("System Message", name + " has joined.") + END_SCRIPT_TAG;
-			notify(cMessage , null);
+			notify(cMessage , null, name);
 
             res.getWriter().println("success");
         } else if ("post".equals(action)) {
             String message = req.getParameter("message");
-            String cMessage = BEGIN_SCRIPT_TAG + toJsonp(name, message) + END_SCRIPT_TAG;
-			ParsedMessage m = new ParsedMessage(message);
-            notify(cMessage, m);
+            ParsedMessage m = new ParsedMessage(message);
+			
+			
+			String modifiedString = message;
+			if ( m != null){
+				String command = m.getCommand();
+				if ( command != null && command.equals("2")){
+					modifiedString = "EPAdult: "+ message;
+				}
+			}		
+			
+			String cMessage = BEGIN_SCRIPT_TAG + toJsonp(name, modifiedString) + END_SCRIPT_TAG;
+			
+            notify(cMessage, m, name);
 
             res.getWriter().println("success");
         } else {
@@ -186,6 +197,7 @@ public class AjaxCometServlet extends HttpServlet {
         }
     }
 
+		
     @Override
     public void destroy() {
         queue.clear();
@@ -193,19 +205,22 @@ public class AjaxCometServlet extends HttpServlet {
         notifierThread.interrupt();
     }
 
-    private void notify(String cMessage, ParsedMessage m) throws IOException {
+    private void notify(String cMessage, ParsedMessage m, String user) throws IOException {
         try {
-			
-			messageQueue.put(cMessage);
-			
 			if ( m != null){
-			String command = m.getCommand();
+				String command = m.getCommand();
 				System.out.println(command);
 				if ( command != null && command.equals("2")){
 					System.out.println("putting message on q");
 					messageQueue2.put(cMessage);
+				} else {
+					messageQueue.put(cMessage);
 				}
+			} else {
+				messageQueue.put(cMessage);
 			}
+			
+			
         } catch(Exception ex) {
             IOException t = new IOException();
             t.initCause(ex);
