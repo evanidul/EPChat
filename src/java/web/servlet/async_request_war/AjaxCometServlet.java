@@ -154,8 +154,16 @@ public class AjaxCometServlet extends HttpServlet {
             public void onStartAsync(AsyncEvent event) throws IOException {
             }
         });
-        queue.add(ac);
-        queue2.add(ac);
+		
+		String user = req.getParameter("user");
+		System.out.println(user);
+		
+		if ("fred".equals(user)){
+			queue.add(ac);
+		} else {
+			queue.add(ac);
+			queue2.add(ac);
+		}
     }
 
     @Override
@@ -183,7 +191,7 @@ public class AjaxCometServlet extends HttpServlet {
 			if ( m != null){
 				String command = m.getCommand();
 				if ( command != null && command.equals("2")){
-					modifiedString = "EPAdult: "+ message;
+					modifiedString = "EPAdult: "+ m.getMessageWithoutCommand();
 				}
 			}		
 			
@@ -209,7 +217,6 @@ public class AjaxCometServlet extends HttpServlet {
         try {
 			if ( m != null){
 				String command = m.getCommand();
-				System.out.println(command);
 				if ( command != null && command.equals("2")){
 					System.out.println("putting message on q");
 					messageQueue2.put(cMessage);

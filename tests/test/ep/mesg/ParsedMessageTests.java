@@ -43,9 +43,11 @@ public class ParsedMessageTests {
 	public void testParsedMessageConstructor(){
 		String commandEscape = "/";
 		String command = "2";
-		String s = commandEscape + command +" hello!";
+		String messageWithoutCommand = " hello!";
+		String s = commandEscape + command + messageWithoutCommand;
 		ParsedMessage m = new ParsedMessage(s);
 		Assert.assertEquals(s, m.getOriginalMessage());
 		Assert.assertEquals(command, m.getCommand());
+		Assert.assertEquals(messageWithoutCommand, m.getMessageWithoutCommand());
 	}
 }

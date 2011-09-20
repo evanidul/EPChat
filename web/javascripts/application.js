@@ -6,7 +6,8 @@ var app = {
       app.listen();
    },
    listen: function() {
-      $('comet-frame').src = app.url + '?' + count;
+	  var user = gup( 'user' );
+      $('comet-frame').src = app.url + '?user='+user+'&' + count;
       count ++;
    },
    login: function() {
