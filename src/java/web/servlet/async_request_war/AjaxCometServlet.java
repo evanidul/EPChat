@@ -226,6 +226,14 @@ public class AjaxCometServlet extends HttpServlet {
         return buffer.toString();
     }
 
+	/**
+	 * dvu: this returns a json payload after chat text is entered.  This json payload contains the new message, and is sent to all chat windows
+	 * and calls window.parent.app.update(), defined in application.js (it basically updates the dom to show the new message that just arrived).
+	 * 
+	 * @param name
+	 * @param message
+	 * @return 
+	 */
     private String toJsonp(String name, String message) {
         return "window.parent.app.update({ name: \"" + escape(name) + "\", message: \"" + escape(message) + "\" });\n";
     }

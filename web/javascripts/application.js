@@ -41,6 +41,9 @@ var app = {
       $('message').disabled = true;
       $('post-button').disabled = true;
 
+	  /** dvu: query contains a string of parameters that ultimately get processed by the AjaxCometServlet.  Passing postBody to Ajax.Request forces
+	   *this operation to be a post, which is why you can see how the parameters gets parsed in the doPost handler in AjaxCometServlet  **/
+
       var query =
 	 'action=post' +
 	 '&name=' + encodeURI($F('login-name')) +
